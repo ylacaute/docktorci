@@ -1,6 +1,6 @@
 
-# DocktorCI
-DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a personnal use but stay generic. Any suggestion and contribution are welcome.
+# # <img src="/logo/logo_v1.png" width="117" alt="docktorci"> DocktorCI
+DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic. Any suggestion and contribution are welcome.
 
 ## Why DocktorCI ?
 The main idea is to keep a git repository of your jenkins configuration and ease the installation part of Jenkins with Docker. Maybe this project will also include others tools like Artifactory. Anyway, this project is a cool way to learn Jenkins :)
@@ -88,10 +88,12 @@ Logs are accessible in **/var/log/jenkins/jenkins.log**
 
 # Updating jobs
 Each time you create job from the interface, you maybe want to get the generated config.xml and put it your repo (config/jobs directory). 
+
 TODO : do that automatically
 
 # Updating plugins
 You have to add it config/plugins/plugins.txt
+
 TODO : do that automatically
 
 # Updating jenkins version
