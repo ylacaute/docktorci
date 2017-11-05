@@ -12,6 +12,15 @@ services:
         JENKINS_SHA: 0ead9cf2ec71224a358eea5aac78fd01e6fa731ab2879dca5652641bac4dfadb
     image: jenkins-official:1.0
 
+  jenkins-slave-ssh-official:
+    build:
+      # https://github.com/jenkinsci/docker-ssh-slave/blob/master/Dockerfile
+      context: https://github.com/jenkinsci/docker-ssh-slave.git#master
+      args:
+        uid: $JENKINS_UID
+        gid: $JENKINS_GID
+    image: jenkins-slave-ssh-official:1.0
+
   jenkins:
     build:
       context: ./jenkins

@@ -4,6 +4,8 @@
 # DocktorCI
 DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic. Any suggestion and contribution are welcome.
 
+**/!\ WORK-IN-PROGRESS /!\**
+
 ## Why DocktorCI ?
 The main idea is to keep a git repository of your jenkins configuration and ease the installation part of Jenkins with Docker. Maybe this project will also include other tools like Artifactory. Anyway, this project is a cool way to learn Jenkins :)
 
@@ -36,17 +38,21 @@ mkdir jenkins_home
 # Create secrets directories (used to build your jenkins image)
 mkdir -p .secrets/jenkins/sshSlave
 
-# Add the admin user password (login = admin)
+# Add the jenkins admin password (login = admin)
 echo "sample_password" > .secrets/jenkins/adminPassword
 
-# Add the artifactory user password
+# Add the jenkins artifactory password (login = jenkins)
 echo "sample_password" > .secrets/jenkins/artifactoryPassword
 
-# Add the jenkins user inside the Jenkins Slave
+
+# Add the jenkins password of the Jenkins Slave (login = jenkins)
 echo "sample_password" > .secrets/jenkins/jenkinsSlavePassword
 
 # Generate RSA keys for jenkins master/slave communication
 ssh-keygen -f .secrets/jenkins/sshSlave/id_rsa -N ""
+# FIXME : not used yet
+
+# TODO : .secrets/jenkins/gitlab
 
 # Secure your .secrets directory
 chmod -R go-rwx .secrets
@@ -63,6 +69,7 @@ mkdir /var/log/jenkins && chown jenkins:jenkins /var/log/jenkins
 su jenkins
 cd
 git clone https://github.com/ylacaute/docktorci.git
+cd docktorci
 ```
 
 ### Customize your pre-configured jobs depending your needs
@@ -78,7 +85,7 @@ JENKINS_UID=${UID} JENKINS_GID=${GID} docker-compose build jenkins-official
 ## Run jenkins
 You can now run your jenkins with one command. The first time you run this command, it will build the final jenkins image, inherited from the official one build just before. 
 ```bash
-docker-compose up jenkins
+docker-compose up -d jenkins
 ```
 ## Stop jenkins
 ```bash
@@ -89,8 +96,11 @@ docker-compose down jenkins
 Logs are accessible in **/var/log/jenkins/jenkins.log**
 
 # Updating jobs
-Each time you create job from the interface, you maybe want to get the generated config.xml and put it your repo (config/jobs directory). 
-
+Each time you create job from the interface, you maybe want to get the generated config.xml and put it your repo (config/jobs directory).
+```bash
+# Rebuild the final jenkins docker image
+docker-compose build jenkins
+``` 
 TODO : do that automatically
 
 # Updating plugins
@@ -107,9 +117,9 @@ docker-compose down && docker rmi jenkins-official:1.0 docktor-jenkins:1.0
 Remove the **jenkins_home** directory, update the **docker-compose.yml** file with the wanted version and rebuild everthing as explained before.
 
 # TODO
-- [ ] Add sample hello-world pipeline
-- [ ] Add jenkins slave (Docker)
+- [x] Add sample hello-world pipeline
+- [ ] Add jenkins slave (Docker) with ssh
 - [ ] Add sample project using a dockerized jenkins slave
-- [ ] Add Jenkins as a systemd service (light script or ansible)
+- [ ] Add Jenkins as a systemd service
 
 
