@@ -5,7 +5,7 @@
 DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic. Any suggestion and contribution are welcome.
 
 ## Why DocktorCI ?
-The main idea is to keep a git repository of your jenkins configuration and ease the installation part of Jenkins with Docker. Maybe this project will also include others tools like Artifactory. Anyway, this project is a cool way to learn Jenkins :)
+The main idea is to keep a git repository of your jenkins configuration and ease the installation part of Jenkins with Docker. Maybe this project will also include other tools like Artifactory. Anyway, this project is a cool way to learn Jenkins :)
 
 ## Installation
 ### Prepare the target host
