@@ -1,5 +1,6 @@
 
 <img src="/logo/logo_v1.png" width="90" alt="docktorci">
+
 # DocktorCI
 DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic. Any suggestion and contribution are welcome.
 
