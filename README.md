@@ -6,10 +6,10 @@
 ## Prepare the target host
 - log as root on the target host
 - install tools
- - git (apt-get install)
- - [docker CE](https://docs.docker.com/engine/installation/#server)
- - [docker-compose](https://docs.docker.com/compose/install)
- - create a [docker group](https://docs.docker.com/engine/installation/linux/linux-postinstall/#manage-docker-as-a-non-root-user)
+  - git (apt-get install)
+  - [docker CE](https://docs.docker.com/engine/installation/#server)
+  - [docker-compose](https://docs.docker.com/compose/install)
+  - create a [docker group](https://docs.docker.com/engine/installation/linux/linux-postinstall/#manage-docker-as-a-non-root-user)
 
 - create a log directory
 ```bash
