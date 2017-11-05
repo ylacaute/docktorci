@@ -1,0 +1,43 @@
+version: '3.3'
+services:
+
+  jenkins-official:
+    build:
+      # https://github.com/jenkinsci/docker/blob/master/Dockerfile-alpine
+      context: https://github.com/jenkinsci/docker.git#alpine
+      args:
+        uid: $JENKINS_UID # 1000 by default
+        gid: $JENKINS_GID # 1000 by default
+        JENKINS_VERSION: 2.87
+        JENKINS_SHA: 0ead9cf2ec71224a358eea5aac78fd01e6fa731ab2879dca5652641bac4dfadb
+    image: jenkins-official:1.0
+
+  jenkins:
+    build:
+      context: ./jenkins
+    image: docktor-jenkins:1.0
+    container_name: jenkins
+    environment:
+      JENKINS_OPTS: "--logfile=/var/log/jenkins/jenkins.log"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    ports:
+      - '8042:8080'
+    volumes:
+      - /home/jenkins/jenkins_home:/var/jenkins_home
+      - /var/log/jenkins:/var/log/jenkins
+    secrets:
+      - artifactoryPassword
+      - jenkinsSlavePassword
+      - sshKey
+      - adminPassword
+
+secrets:
+  adminPassword:
+    file: /home/jenkins/.secrets/jenkins/adminPassword
+  artifactoryPassword:
+    file: /home/jenkins/.secrets/jenkins/artifactoryPassword
+  jenkinsSlavePassword:
+    file: /home/jenkins/.secrets/jenkins/jenkinsSlavePassword
+  sshKey:
+    file: /home/jenkins/.secrets/jenkins/sshSlave/id_rsa.pub
+

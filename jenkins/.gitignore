@@ -1,0 +1,13 @@
+
+
+# IDE, etc
+.idea
+
+#Ignore everything except jobs directory
+/jenkins_home/*
+!/jenkins_home/jobs
+
+#Ignore everything in jobs directory except config.xml
+/jenkins_home/jobs/*/**
+!/jenkins_home/jobs/*/config.xml
+
