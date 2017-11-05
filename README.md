@@ -12,8 +12,10 @@ The main idea is to keep a git repository of your jenkins configuration and ease
   - git (apt-get install)
   - [docker CE](https://docs.docker.com/engine/installation/#server)
   - [docker-compose](https://docs.docker.com/compose/install)
-- create a [docker group](https://docs.docker.com/engine/installation/linux/linux-postinstall/#manage-docker-as-a-non-root-user) with no one inside : sudo groupadd docker
-
+- create a [docker group](https://docs.docker.com/engine/installation/linux/linux-postinstall/#manage-docker-as-a-non-root-user) with no one inside
+```bash
+sudo groupadd docker
+```
 - create a jenkins user, please adapt options depending your needs
 ```bash
 useradd jenkins --create-home --home /home/jenkins --shell /bin/zsh -G docker
