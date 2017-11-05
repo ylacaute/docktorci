@@ -67,7 +67,7 @@ git clone https://github.com/ylacaute/docktorci.git
 You will find a **hello-world pipeline** sample in config/jobs/hello-pipeline, who only contains a **config.xml**.
 
 ### Build the jenkins official image
-This is a tricky part : you rebuild the official image directly from the official Github Dockerfile in order to exploit those **ARG** parameters. Indeed, if you build your jenkins image as usual **FROM** the official build LTS, which is simpler I must admit, you will not able to specify arguments, like the jenkins UID for example.
+This is a tricky part : you rebuild the official image directly from the official Jenkins Dockerfile (on Github) in order to exploit those **ARG** parameters. Indeed, if you build your jenkins image as usual **FROM** the official build LTS, which is simpler I must admit, you will not able to specify arguments, like the jenkins UID for example.
 ```bash
 # if your not logged as jenkins user, you will have to manually specify jenkins UID and GID
 JENKINS_UID=${UID} JENKINS_GID=${GID} docker-compose build jenkins-official
