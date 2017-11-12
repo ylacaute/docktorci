@@ -128,6 +128,11 @@ jenkins.model.Jenkins.instance.getPluginManager().getPlugins().each {
 }
 ```
 
+## Backlog
+
+- [ ] __Auto-sync jobs__ add option to copy config.xml of all manually created jobs
+- [ ] __Auto-sync plugins__ add option to extract and save plugins as plugins.txt
+
 ## Screenshots
 
 <img src="images/master_start.png" alt="docktorci">
