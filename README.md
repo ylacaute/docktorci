@@ -30,18 +30,21 @@ You will also have to create a jenkins user (adjust options depending your needs
 useradd jenkins --create-home --home /home/jenkins --shell /bin/bash -G docker
 
 # Create secrets directories, here already created and showed for the example
+
+# Your admin jenkins account
 cat /home/jenkins/.secrets/jenkins/admin
 sampleAdminLogin:myPassword
 
+# Your artifactory account (to push snapshot/release artifacts)
 cat /home/jenkins/.secrets/jenkins/artifactory
 login:pwd
 
-# You have to create key here with ssh-keygen (or copy existing ones)
+# Your ssh priv and pub keys here for master/slave communication
 ls /home/jenkins/.secrets/jenkins/slave
  - id_rsa
  - id_rsa.pub
 
-# You have to create key here with ssh-keygen (or copy existing ones)
+# Your ssh priv and pub keys here for your access to gitlab (account to checkout)
 ls /home/jenkins/.secrets/jenkins/gitlab
  - id_rsa
  - id_rsa.pub
@@ -58,29 +61,29 @@ mkdir /var/log/jenkins && chown jenkins:jenkins /var/log/jenkins
 
 ### Checkout this project
 
-You can checkout this project anywhere, /home/jenkins will be use here. 
+You can checkout this project anywhere, /home/jenkins will be used here. 
 ```bash
 # whoami: jenkins
 # pwd:    /home/jenkins
 git clone https://github.com/ylacaute/docktorci.git && cd docktorci
 ```
-This script **docktor.sh** will help you to control your jenkins master and slave.
+The script **docktor.sh** will help you to control your jenkins master and slave.
 <img src="images/usage.png" alt="docktorci">
 
 ### Start Jenkins master
-The first time you run the script, it is simpler to run it as root to create all missing directories.
+The first time you run the script, it is simpler to run it as root to create all missing stuff like directories.
 ```bash
 ./docktor.sh start master
 ```
-The first time you start Jenkins, images will have to be build. During this build you need to specify the slave
+The first time you start master/slave, images will have to be build. During this build you need to specify the slave
 host IP. The script will take the first IP given from the ```hostname -I``` command which is usually the good one to
-use. If it is not the case, you still can specify it: 
+use. If it is not the case, you still can specify it (with the rebuild option to recreate the image): 
 ```bash
 ./docktor.sh -r --slave-host <YOUR_SLAVE_IP> start master
 ```
 
 ### Start Jenkins slave
-If you want your slave on another host, you have to checkout the project as well on this host.
+If you want your slave on another host, you have to checkout this project as well.
 ```bash
 ./docktor.sh start slave
 ```
@@ -98,7 +101,7 @@ If you start a build, you will see it is executed on the slave node:
 ## Documentation
 
 ### SSH
-By default, master and slave comminucation is done with SSH on port 2222. This is not parametrable but you can
+By default, master and slave communication is done with SSH on port 2222. This is not parametrable but you can
 easily change it by yourself (node config + docker-compose config).
 
 ### Logging
