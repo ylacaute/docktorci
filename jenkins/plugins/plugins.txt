@@ -81,3 +81,4 @@ script-security
 resource-disposer
 workflow-cps
 antisamy-markup-formatter
+greenballs
