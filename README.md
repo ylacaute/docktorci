@@ -11,7 +11,11 @@ DocktorCI is a template project for a scripted and dockerized Jenkins installati
  - No workaround for the jenkins UID/GID (official image is build to suit your environment)
  - The slave include a Docker client, so you can start other containers inside your pipeline
  - You don't need Docker Hub account, images are build on the fly
- 
+
+**Tech Stack**
+
+<img src="/images/tech/jenkins.png" alt="Jenkins" title="Jenkins" width="50px"/><img src="/images/tech/docker.png" alt="Docker" title="Docker" width="50px"/><img src="/images/tech/docker-compose.png" alt="Docker-compose" title="Docker-compose" width="50px"/>
+
 ## Installation
 
 ### Prepare the target host(s)
