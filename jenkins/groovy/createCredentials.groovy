@@ -74,3 +74,4 @@ def credentials_store = Jenkins.instance
 credentials_store.addCredentials(global_domain, jenkinsSlaveCredentials)
 credentials_store.addCredentials(global_domain, artifactoryCredentials)
 credentials_store.addCredentials(global_domain, gitlabCredentials)
+credentials_store.addCredentials(global_domain, githubCredentials)
