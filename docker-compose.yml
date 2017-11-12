@@ -15,7 +15,7 @@ services:
   jenkins-master:
     build:
       context: ./jenkins
-      dockerfile: Dockerfile-master
+      dockerfile: docker/master/Dockerfile
       args:
         SLAVE_HOST: ${SLAVE_HOST}
     image: jenkins-master:latest
@@ -38,7 +38,7 @@ services:
   jenkins-slave:
     build:
       context: ./jenkins
-      dockerfile: Dockerfile-slave
+      dockerfile: docker/slave/Dockerfile
       args:
         uid: $JENKINS_UID
         gid: $JENKINS_GID
@@ -48,7 +48,7 @@ services:
   jenkins-slave-docker:
     build:
       context: ./jenkins
-      dockerfile: Dockerfile-slave-docker
+      dockerfile: docker/slave-docker/Dockerfile
     image: jenkins-slave-docker:latest
     container_name: jenkins-slave
     ports:
