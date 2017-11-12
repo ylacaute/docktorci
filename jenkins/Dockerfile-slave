@@ -33,4 +33,3 @@ EXPOSE 22
 
 # Start sshd
 CMD ["/usr/sbin/sshd", "-D"]
-

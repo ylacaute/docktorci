@@ -4,24 +4,39 @@ VERSION="DocktorCI version v0.1.0"
 PROG="dockerCI.sh"
 
 declare -A ENV
-ENV[JENKINS_HOME]="/home/jenkins/master"
-ENV[JENKINS_LOGS]="/var/log/jenkins"
+
+# Image names (which are also docker-compose service names)
 ENV[JENKINS_OFFICIAL]="jenkins-official"
 ENV[JENKINS_MASTER]="jenkins-master"
 ENV[JENKINS_SLAVE]="jenkins-slave"
 ENV[JENKINS_SLAVE_DOCKER]="jenkins-slave-docker"
+
+# Home of master and slave (not necessary on the same host)
+ENV[JENKINS_HOME]="/home/jenkins/master"
 ENV[JENKINS_SLAVE_HOME]="/home/jenkins/slave"
+
+# General configuration
+ENV[JENKINS_LOGS]="/var/log/jenkins"
 ENV[SECRET_DIR]="/home/jenkins/.secrets"
 ENV[JENKINS_UID]=
 ENV[JENKINS_GID]=
 ENV[SLAVE_HOST]=
 
+# Pretty display of the env array
+displayComposeEnv() {
+  printArray ENV " ${star} "
+}
+
+# Import generic script functions
 . utils.sh
 
+
+###############################################################################
+# USAGE
+###############################################################################
 usageTitle() {
   echo -en "\n${Red}${1}${RCol}"
 }
-
 usage() {
   local message=${1}
   if [[ "${message}" != "" ]]; then
@@ -38,8 +53,11 @@ usage() {
          ${Red}docktor.sh ${Cya}[OPTIONS]${RCol} ${Red}COMMAND${RCol} ${Blu}[ARG]${RCol}"
   usageTitle "OPTIONS"
   echo -e "
-         ${Cya}-r${RCol},${Cya}--rebuild${RCol}
-         Force to rebuild docker images. Delete containers and images if exist.
+         ${Cya}-r${RCol},${Cya}--rebuild ${RCol}[${Cya}all${RCol}]
+         Force to rebuild docker image (slave or master depending the main command).
+         It deletes containers and images if exist.
+         If you specify ${Cya}all${RCol} argument, it will also rebuild the parent image, which
+         take much more time to rebuild.
 
          ${Cya}-s${RCol},${Cya}--slave-host ${Gre}145.239.78.98${RCol}
          Specify a slave host (ip) for the jenkins master configuration"
@@ -50,17 +68,20 @@ usage() {
          Start the slave or master depending the argument. Docker images are build
          if they doesn't not already exist."
   echo -e "
-         ${Red}stop ${RCol}[${Blu}slave${RCol}|${Blu}master${RCol}]
-         Stop a running slave or master depending the argument."
-
+         ${Red}stop${RCol}
+         Stop all running container (slave or master). Behind the hood it do a docker-compose down so
+         it shut down everything. We can't just stop a service because of a docker-compose bug
+         More info: ${Blu}https://github.com/docker/compose/issues/1113${RCol}"
+  echo -e "
+         ${Red}clean${RCol}
+         Remove everything (containers and images)"
   echo
   exit 0
 }
 
-displayComposeEnv() {
-  printArray ENV " ${star} "
-}
-
+###############################################################################
+# DOCKER-COMPOSE BUILD AND START COMMANDS
+###############################################################################
 doBuild() {
   local service=${1}
 
@@ -71,6 +92,7 @@ doBuild() {
   JENKINS_GID=${ENV[JENKINS_GID]}\
   JENKINS_HOME=${ENV[JENKINS_HOME]}\
   JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
+  SECRET_DIR=${ENV[SECRET_DIR]}\
   SLAVE_HOST=${ENV[SLAVE_HOST]}\
   JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
   docker-compose build ${service}
@@ -89,22 +111,29 @@ doStart() {
     JENKINS_GID=${ENV[JENKINS_GID]}\
     JENKINS_HOME=${ENV[JENKINS_HOME]}\
     JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
+    SECRET_DIR=${ENV[SECRET_DIR]}\
     SLAVE_HOST=${ENV[SLAVE_HOST]}\
     JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
     docker-compose up -d ${service}"
   set +e
 }
 
+###############################################################################
+# START MASTER PROCESS
+###############################################################################
 startMaster() {
   local rebuild=${1}
+  local rebuildAll=${2}
   local jenkinsOfficial=${ENV[JENKINS_OFFICIAL]}
   local jenkinsMaster=${ENV[JENKINS_MASTER]}
   local jenkinsHome=${ENV[JENKINS_HOME]}
   local jenkinsLogs=${ENV[JENKINS_LOGS]}
   local secretDir=${ENV[SECRET_DIR]}
 
-  if [[ "${rebuild}" == "true" ]]; then
+  if [[ "${rebuildAll}" == "true" ]]; then
     deleteDockerImage ${jenkinsOfficial}
+  fi
+  if [[ "${rebuild}" == "true" ]]; then
     deleteDockerImage ${jenkinsMaster}
   fi
   verifyDockerImageExist ${jenkinsOfficial}
@@ -141,14 +170,20 @@ startMaster() {
   doStart ${jenkinsMaster}
 }
 
+###############################################################################
+# START SLAVE PROCESS
+###############################################################################
 startSlave() {
   local rebuild=${1}
+  local rebuildAll=${2}
   local slave=${ENV[JENKINS_SLAVE]}
   local slaveDocker=${ENV[JENKINS_SLAVE_DOCKER]}
   local slaveHome=${ENV[JENKINS_SLAVE_HOME]}
 
-  if [[ "${rebuild}" == "true" ]]; then
+  if [[ "${rebuildAll}" == "true" ]]; then
     deleteDockerImage ${slave}
+  fi
+  if [[ "${rebuild}" == "true" ]]; then
     deleteDockerImage ${slaveDocker}
   fi
   verifyDockerImageExist ${slave}
@@ -169,9 +204,31 @@ startSlave() {
     check "Jenkins slave home directory '${slaveHome}' created successfully"
   fi
 
+  verifyFileExist "${slaveHome}/.ssh/authorized_keys"
+  if [[ $? -ne 0 ]]; then
+    local pubKey="${ENV[SECRET_DIR]}/jenkins/slave/id_rsa.pub"
+    local target="${sshDir}/authorized_keys"
+
+    verifyFileExist "${pubKey}"
+    if [[ $? -ne 0 ]]; then
+      error "No public key found in '${pubKey}', unable to create authorized_keys for slave." 1
+    fi
+    local sshDir="${slaveHome}/.ssh"
+    set -e
+    mkdir -p ${sshDir}
+    cp ${pubKey} ${target}
+    chmod 700 ${sshDir} && chmod 600 ${target}
+    chown -R jenkins:jenkins ${sshDir}
+    set +e
+    check "SSH Public key of master successfully copied in '${target}'"
+  fi
+
   doStart ${slaveDocker}
 }
 
+###############################################################################
+# STOP EVERYTHING RUNNING
+###############################################################################
 stop() {
   info "Stopping jenkins running on this host..."
   set -e
@@ -179,17 +236,41 @@ stop() {
   JENKINS_GID=${ENV[JENKINS_GID]}\
   JENKINS_HOME=${ENV[JENKINS_HOME]}\
   JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
+  SECRET_DIR=${ENV[SECRET_DIR]}\
   SLAVE_HOST=${ENV[SLAVE_HOST]}\
   JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
   docker-compose down
   set +e
 }
 
+###############################################################################
+# STOP EVERYTHING RUNNING AND REMOVE ALL CONTAINERS AND IMAGES
+###############################################################################
+clean() {
+  stop
+  info "Removing all images on this host..."
+  deleteDockerImage ${ENV[JENKINS_SLAVE]}
+  deleteDockerImage ${ENV[JENKINS_SLAVE_DOCKER]}
+  deleteDockerImage ${ENV[JENKINS_OFFICIAL]}
+  deleteDockerImage ${ENV[JENKINS_MASTER]}
+}
+
+###############################################################################
+# MAIN - PROCESS ARGS
+###############################################################################
+exitIfActionAlreadyDefined() {
+  local previsouAction=${1}
+  local currentAction=${2}
+  if [[ "${previsouAction}" != "${UNSET}" ]]; then
+    error "Invalid ${currentAction} argument: command already defined." 1
+  fi
+}
 main() {
   local action=${UNSET}
   local target=${UNSET}
   local slaveHost=${UNSET}
   local rebuild="false"
+  local rebuildAll="false"
 
   # Display usage if no argument
   usageIfNoArgument ${@}
@@ -202,9 +283,7 @@ main() {
         usage;;
 
       start)
-        if [[ "${action}" != "${UNSET}" ]]; then
-          error "Invalid ${1} argument: command already defined." 1
-        fi
+        exitIfActionAlreadyDefined ${action} ${1}
         action=${1}
         target=${2}
         if [[ "${target}" != "master" && "${target}" != "slave" ]]; then
@@ -214,9 +293,7 @@ main() {
         shift 2;;
 
       stop)
-        if [[ "${action}" != "${UNSET}" ]]; then
-          error "Invalid ${1} argument: command already defined." 1
-        fi
+        exitIfActionAlreadyDefined ${action} ${1}
         action=${1}
         shift 1;;
 
@@ -226,6 +303,15 @@ main() {
 
       -r|--rebuild)
         rebuild="true"
+        if [[ "${2}" == "all" ]]; then
+          rebuildAll="true"
+          shift 1
+        fi
+        shift 1;;
+
+      clean)
+        exitIfActionAlreadyDefined ${action} ${1}
+        action=${1}
         shift 1;;
 
       "")
@@ -263,10 +349,13 @@ main() {
   fi
   if [[ "${action}" == "start" ]]; then
     if [[ "${target}" == "master" ]]; then
-      startMaster ${rebuild}
+      startMaster ${rebuild} ${rebuildAll}
     else
-      startSlave ${rebuild}
+      startSlave ${rebuild} ${rebuildAll}
     fi
+
+  elif [[ "${action}" == "clean" ]]; then
+    clean
   else
     stop
   fi

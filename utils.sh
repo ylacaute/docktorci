@@ -131,11 +131,21 @@ getMainIp() {
 verifyDirectoryExist() {
   local path=${1}
   if [ -d "${path}" ]; then
-    # Control will enter here if $DIRECTORY exists.
-    check "Jenkins home directory exists: ${path}"
+    check "Directory '${path}' exists"
     return 0
   else
-    warn "Jenkins home directory doesn't exist"
+    warn "Directory '${path}' doesn't exist"
+    return 1
+  fi
+}
+
+verifyFileExist() {
+  local path=${1}
+  if [ -f "${path}" ]; then
+    check "File '${path}' exists"
+    return 0
+  else
+    warn "File '${path}' doesn't exist"
     return 1
   fi
 }
@@ -150,7 +160,7 @@ verifyDockerImageExist() {
   local image=${1}
   docker images | grep ${image} > /dev/null 2>&1
   if [[ ${?} -eq 0 ]]; then
-    check "Docker image '${image}' exists."
+    check "Docker image '${image}' exists"
     return 0
   else
     warn "Docker image '${image}' doesn't exist" 1

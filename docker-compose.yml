@@ -42,6 +42,7 @@ services:
       args:
         uid: $JENKINS_UID
         gid: $JENKINS_GID
+        JENKINS_SLAVE_HOME: ${JENKINS_SLAVE_HOME}
     image: jenkins-slave:latest
 
   jenkins-slave-docker:
@@ -58,11 +59,11 @@ services:
 
 secrets:
   admin:
-    file: ${JENKINS_HOME}/.secrets/jenkins/admin
+    file: ${SECRET_DIR}/jenkins/admin
   artifactory:
-    file: ${JENKINS_HOME}/.secrets/jenkins/artifactory
+    file: ${SECRET_DIR}/jenkins/artifactory
   jenkinsSlaveKeys:
-    file: ${JENKINS_HOME}/.secrets/jenkins/slave
+    file: ${SECRET_DIR}/jenkins/slave
   gitlabKeys:
-    file: ${JENKINS_HOME}/.secrets/jenkins/gitlab
+    file: ${SECRET_DIR}/jenkins/gitlab
 

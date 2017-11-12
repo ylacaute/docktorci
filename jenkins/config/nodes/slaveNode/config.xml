@@ -25,7 +25,7 @@
           </default>
           <int>1</int>
           <string>JENKINS_HOME_HOST_VOLUME</string>
-          <string>/var/jenkins_slave</string>
+          <string>__JENKINS_HOME_HOST_VOLUME__</string>
         </tree-map>
       </envVars>
     </hudson.slaves.EnvironmentVariablesNodeProperty>
