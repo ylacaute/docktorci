@@ -107,15 +107,14 @@ doStart() {
   command "jenkins -c \"docker-compose up -d ${service}\""
   displayComposeEnv
   set -e
-  su jenkins -c "\
-    JENKINS_UID=${ENV[JENKINS_UID]}\
-    JENKINS_GID=${ENV[JENKINS_GID]}\
-    JENKINS_HOME=${ENV[JENKINS_HOME]}\
-    JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
-    SECRET_DIR=${ENV[SECRET_DIR]}\
-    SLAVE_HOST=${ENV[SLAVE_HOST]}\
-    JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
-    docker-compose up -d ${service}"
+  JENKINS_UID=${ENV[JENKINS_UID]}\
+  JENKINS_GID=${ENV[JENKINS_GID]}\
+  JENKINS_HOME=${ENV[JENKINS_HOME]}\
+  JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
+  SECRET_DIR=${ENV[SECRET_DIR]}\
+  SLAVE_HOST=${ENV[SLAVE_HOST]}\
+  JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
+  docker-compose up -d ${service}
   set +e
 }
 
