@@ -1,5 +1,5 @@
 
-<img src="/logo/logo_v1.png" width="90" alt="docktorci">
+<img src="images/logo_v1.png" width="90" alt="docktorci">
 
 # DocktorCI
 DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic.
@@ -64,7 +64,7 @@ You can checkout this project anywhere, /home/jenkins will be use here.
 git clone https://github.com/ylacaute/docktorci.git && cd docktorci
 ```
 This script **docktor.sh** will help you to control your jenkins master and slave.
-<img src="usage.png" alt="docktorci">
+<img src="images/usage.png" alt="docktorci">
 
 ### Start Jenkins master
 The first time you run the script, it is simpler to run it as root to create all missing directories.
@@ -88,6 +88,10 @@ As for the master, images will have to be build the first time you start it. The
 ### Connect to your jenkins IHM
 You should now able to connect to <yourHostIP>:8042 and log in as your defined admin password.
 A simple hello-world pipeline is already created. 
+
+If you start a build, you will see it is executed on the slave node:
+
+<img src="images/hello_world_pipeline.png" alt="docktorci">
 
 
 ## Documentation
@@ -113,4 +117,4 @@ jenkins.model.Jenkins.instance.getPluginManager().getPlugins().each {
 
 ## Screenshots
 
-<img src="screenshot_master_start.png" alt="docktorci">
+<img src="images/master_start.png" alt="docktorci">
