@@ -79,6 +79,7 @@ use. If it is not the case, you still can specify it:
 ```
 
 ### Start Jenkins slave
+If you want your slave on another host, you have to checkout the project as well on this host.
 ```bash
 ./docktor.sh start slave
 ```
