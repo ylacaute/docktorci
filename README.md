@@ -2,129 +2,96 @@
 <img src="/logo/logo_v1.png" width="90" alt="docktorci">
 
 # DocktorCI
-DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic. Any suggestion and contribution are welcome.
+DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic.
 
-**/!\\ WORK-IN-PROGRESS /!\\**
-
-## Why DocktorCI ?
-The main idea is to keep a git repository of your jenkins configuration and ease the installation part of Jenkins with Docker. Maybe this project will also include other tools like Artifactory. Anyway, this project is a cool way to learn Jenkins :)
+benefits:
+ - ease the installation of a jenkins master with a jenkins slave (ssh)
+ - allow to keep a clean repository of your jenkins configuration
+ - use of Docker images for master and slave
+ 
 
 ## Installation
-### Prepare the target host
-- log as root on the target host
-- install tools
-  - git (apt-get install)
-  - [docker CE](https://docs.docker.com/engine/installation/#server)
-  - [docker-compose](https://docs.docker.com/compose/install)
-- create a [docker group](https://docs.docker.com/engine/installation/linux/linux-postinstall/#manage-docker-as-a-non-root-user) with no one inside
+
+### Prepare the target host(s)
+
+You can install master and slave on the same host, or on different ones. In all cases you have to install some tools on these hosts:
+ - git
+ - [docker CE](https://docs.docker.com/engine/installation/#server)
+ - [docker-compose](https://docs.docker.com/compose/install)
+
+You will also have to create a jenkins user (adjust options depending your needs)
+
 ```bash
-sudo groupadd docker
-```
-- create a jenkins user, please adapt options depending your needs
-```bash
-useradd jenkins --create-home --home /home/jenkins --shell /bin/zsh -G docker
-```
-- configure jenkins user
-```bash
-# log as jenkins user
-su jenkins
+# whoami: root
 
-# Go home
-cd
+# Add a jenkins user, in the Docker group 
+useradd jenkins --create-home --home /home/jenkins --shell /bin/bash -G docker
 
-# create jenkins_home directory (where jenkins save everything at runtime)
-mkdir jenkins_home
+# Create secrets directories, here already created and showed for the example
+cat /home/jenkins/.secrets/jenkins/admin
+sampleAdminLogin:myPassword
 
-# Create secrets directories (used to build your jenkins image)
-mkdir -p .secrets/jenkins/sshSlave
+cat /home/jenkins/.secrets/jenkins/artifactory
+login:pwd
 
-# Add the jenkins admin password (login = admin)
-echo "sample_password" > .secrets/jenkins/adminPassword
+# You have to create key here with ssh-keygen (or copy existing ones)
+ls /home/jenkins/.secrets/jenkins/slave
+ - id_rsa
+ - id_rsa.pub
 
-# Add the jenkins artifactory password (login = jenkins)
-echo "sample_password" > .secrets/jenkins/artifactoryPassword
+# You have to create key here with ssh-keygen (or copy existing ones)
+ls /home/jenkins/.secrets/jenkins/gitlab
+ - id_rsa
+ - id_rsa.pub
 
+# Example to generate RSA keys for jenkins master/slave communication (no passphrase)
+ssh-keygen -f /home/jenkins/.secrets/jenkins/slave/id_rsa -N ""
 
-# Add the jenkins password of the Jenkins Slave (login = jenkins)
-echo "sample_password" > .secrets/jenkins/jenkinsSlavePassword
+# Secure your .secrets directory and assign it to the jenkins user
+chmod -R go-rwx /home/jenkins/.secrets && chown -R jenkins:jenkins /home/jenkins/.secrets
 
-# Generate RSA keys for jenkins master/slave communication
-ssh-keygen -f .secrets/jenkins/sshSlave/id_rsa -N ""
-# FIXME : not used yet
-
-# TODO : .secrets/jenkins/gitlab
-
-# Secure your .secrets directory
-chmod -R go-rwx .secrets
-```
-
-- as root, create a log directory 
-```bash
+# create a log directory
 mkdir /var/log/jenkins && chown jenkins:jenkins /var/log/jenkins
 ```
 
 ### Checkout this project
-- log as jenkins and clone this project
+
+You can checkout this project anywhere, /home/jenkins will be use here. 
 ```bash
-su jenkins
-cd
-git clone https://github.com/ylacaute/docktorci.git
-cd docktorci
+# whoami: jenkins
+# pwd:    /home/jenkins
+git clone https://github.com/ylacaute/docktorci.git && cd docktorci
 ```
+This script **docktor.sh** will help you to control your jenkins master and slave.
 
-### Customize your pre-configured jobs depending your needs
-You will find a **hello-world pipeline** sample in config/jobs/hello-pipeline, who only contains a **config.xml**.
-
-### Build the jenkins official image
-This is a tricky part : you rebuild the official image directly from the official Jenkins Dockerfile (on Github) in order to exploit those **ARG** parameters. Indeed, if you build your jenkins image as usual **FROM** the official build LTS, which is simpler I must admit, you will not able to specify arguments, like the jenkins UID for example.
+### Start Jenkins master
 ```bash
-# if your not logged as jenkins user, you will have to manually specify jenkins UID and GID
-JENKINS_UID=${UID} JENKINS_GID=${GID} docker-compose build jenkins-official
+./docktor.sh --slave-host <YOUR IP> start master
 ```
+The first time you start Jenkins, images will have to be build. During this build you need to specify the slave
+host IP. If you don't specify it, the script will take the first IP given from the ```hostname -I``` command. 
 
-## Run jenkins
-You can now run your jenkins with one command. The first time you run this command, it will build the final jenkins image, inherited from the official one build just before. 
+### Start Jenkins slave
 ```bash
-docker-compose up -d jenkins
+./docktor.sh start slave
 ```
-## Stop jenkins
-```bash
-docker-compose down jenkins
-```
+As for the master, images will have to be build the first time you start it. The slave images take longer to build.
 
-# Logging
-Logs are accessible in **/var/log/jenkins/jenkins.log**
-
-# Updating jobs
-Each time you create job from the interface, you maybe want to get the generated config.xml and put it your repo (config/jobs directory).
-```bash
-# Rebuild the final jenkins docker image
-docker-compose build jenkins
-``` 
-TODO : do that automatically
-
-# Updating plugins
-You have to add it config/plugins/plugins.txt
-
-TODO : do that automatically
-
-# Updating jenkins version
-To update jenkins version you have to rebuild the two images. 
-```bash
-# remove containers and delete images
-docker-compose down && docker rmi jenkins-official:1.0 docktor-jenkins:1.0
-```
-Remove the **jenkins_home** directory, update the **docker-compose.yml** file with the wanted version and rebuild everthing as explained before.
-
-# TODO
-- [x] Add sample hello-world pipeline
-- [ ] Add jenkins slave (Docker) with ssh
-- [ ] Add sample project using a dockerized jenkins slave
-- [ ] Add Jenkins as a systemd service
+### Connect to your jenkins IHM
+You should now able to connect to <yourHostIP>:8042 and log in as your defined admin password.
+A simple hello-world pipeline is already created. 
 
 
-# Tips & tricks
+## Documentation
 
+### Logging
+Logs are accessible in **/var/log/jenkins/jenkins.log** by default.
+
+### Rebuild image
+The script allow the -r option when starting master or slave: with this option it will also force to rebuild 
+docker images.
+
+### Tips & tricks
 After installing a plugin, you can extract the updated plugins list from the jenkins console. 
 ```groovy
 jenkins.model.Jenkins.instance.getPluginManager().getPlugins().each {
