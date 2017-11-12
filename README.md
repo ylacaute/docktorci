@@ -79,9 +79,7 @@ The first time you run the script, it is simpler to run it as root to create all
 ```bash
 ./docktor.sh start master
 ```
-The first time you start master/slave, images will have to be build. During this build you need to specify the slave
-host IP. The script will take the first IP given from the ```hostname -I``` command which is usually the good one to
-use. If it is not the case, you still can specify it (with the rebuild option to recreate the image): 
+The first time you start master/slave, images will have to be build. The master build need the slave host IP. By default the script takes the first IP given from the ```hostname -I``` which is usually the good one to use when you run the slave on the same host of the master. If it is not the case, you still can specify it. 
 ```bash
 ./docktor.sh -r --slave-host <YOUR_SLAVE_IP> start master
 ```
