@@ -117,6 +117,9 @@ docker images.
 
 **After a rebuild:** keep in mind all running containers (slave and master) are shutting down, you will have to restart them. Just take a look at ```docker ps``` to see what is running. 
 
+Also, when you update Jenkins configuration by rebuilding the Jenkins image, you often as to remove everything in jenkins home directory in order to make changes. For now, you have to remove it manually.
+You can safely remove everything in Jenkins home, but be sure to extract job configuration for example because they will be lost and recreated from the base configuration in the git repository. 
+
 ### Tips & tricks
 After installing a plugin, you can extract the updated plugins list from the jenkins console. 
 ```groovy
