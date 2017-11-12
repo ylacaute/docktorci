@@ -111,3 +111,4 @@ jenkins.model.Jenkins.instance.getPluginManager().getPlugins().each {
 
 ## Screenshots
 
+<img src="screenshot_master_start.png" alt="docktorci">
