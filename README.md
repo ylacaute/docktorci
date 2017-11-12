@@ -111,6 +111,8 @@ Logs are accessible in **/var/log/jenkins/jenkins.log** by default.
 The script allow the -r option when starting master or slave: with this option it will also force to rebuild 
 docker images.
 
+**After a rebuild:** keep in mind all running containers (slave and master) are shutting down, you will have to restart them. Just take a look at ```docker ps``` to see what is running. 
+
 ### Tips & tricks
 After installing a plugin, you can extract the updated plugins list from the jenkins console. 
 ```groovy
