@@ -23,7 +23,7 @@ You can install master and slave on the same host, or on different ones. In all 
 
 You will also have to create a jenkins user (adjust options depending your needs)
 
-```bash
+```sh
 # whoami: root
 
 # Add a jenkins user, in the Docker group 
