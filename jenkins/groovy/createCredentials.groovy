@@ -51,21 +51,19 @@ def gitlabCredentials = new BasicSSHUserPrivateKey(
         gitlabCredentialsClass.passphrase,
         gitlabCredentialsClass.description)
 
-// GITHUB ACCOUNT
+// GITHUB ACCOUNT (only login/password supported by Jenkins for Github)
+def githubCredentialsRaw = new File("/run/secrets/github").text.trim().split(":")
 def githubCredentialsClass = [
         'id':'githubCredentialsId',
-        'username':'jenkins',
-        'sshKeyPath':'/run/secrets/githubKeys/id_rsa',
-        'passphrase':'',
+        'username':githubCredentialsRaw[0],
+        'password':githubCredentialsRaw[1],
         'description':'GitHub Credentials']
-def githubCredentials = new BasicSSHUserPrivateKey(
+def githubCredentials = new UsernamePasswordCredentialsImpl(
         CredentialsScope.GLOBAL,
         githubCredentialsClass.id,
+        githubCredentialsClass.description,
         githubCredentialsClass.username,
-        new BasicSSHUserPrivateKey.FileOnMasterPrivateKeySource(
-                githubCredentialsClass.sshKeyPath),
-        githubCredentialsClass.passphrase,
-        githubCredentialsClass.description)
+        githubCredentialsClass.password)
 
 def global_domain = Domain.global()
 def credentials_store = Jenkins.instance
