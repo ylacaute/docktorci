@@ -4,11 +4,12 @@
 # DocktorCI
 DocktorCI is a template project for a scripted and dockerized Jenkins installation. It is mainly designed for a **personal use** but stay generic.
 
-benefits:
- - ease the installation of a jenkins master with a jenkins slave (ssh)
- - allow to keep a clean repository of your jenkins configuration
+**Benefits:**
+ - Ease the installation of a jenkins master with a jenkins slave (ssh)
+ - Allow to preserve a clean git repository of your jenkins configuration
  - use of Docker images for master and slave
- 
+ - no workaround for the jenkins UID/GID (official image is build to suit your environment)
+ - The slave include a Docker client, so you can start other containers inside your pipeline
 
 ## Installation
 

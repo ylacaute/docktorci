@@ -180,6 +180,9 @@ startSlave() {
   local slave=${ENV[JENKINS_SLAVE]}
   local slaveDocker=${ENV[JENKINS_SLAVE_DOCKER]}
   local slaveHome=${ENV[JENKINS_SLAVE_HOME]}
+  local authKeyDir="${slaveHome}/.ssh"
+  local authKey="${authKeyDir}/authorized_keys"
+  local pubKey="${ENV[SECRET_DIR]}/jenkins/slave/id_rsa.pub"
 
   if [[ "${rebuildAll}" == "true" ]]; then
     deleteDockerImage ${slave}
@@ -205,23 +208,19 @@ startSlave() {
     check "Jenkins slave home directory '${slaveHome}' created successfully"
   fi
 
-  verifyFileExist "${slaveHome}/.ssh/authorized_keys"
+  verifyFileExist ${authKey}
   if [[ $? -ne 0 ]]; then
-    local pubKey="${ENV[SECRET_DIR]}/jenkins/slave/id_rsa.pub"
-    local target="${sshDir}/authorized_keys"
-
-    verifyFileExist "${pubKey}"
+    verifyFileExist ${pubKey}
     if [[ $? -ne 0 ]]; then
       error "No public key found in '${pubKey}', unable to create authorized_keys for slave." 1
     fi
-    local sshDir="${slaveHome}/.ssh"
     set -e
-    mkdir -p ${sshDir}
-    cp ${pubKey} ${target}
-    chmod 700 ${sshDir} && chmod 600 ${target}
-    chown -R jenkins:jenkins ${sshDir}
+    mkdir -p ${authKeyDir}
+    cp ${pubKey} ${authKey}
+    chmod 700 ${authKeyDir} && chmod 600 ${authKey}
+    chown -R jenkins:jenkins ${authKeyDir}
     set +e
-    check "SSH Public key of master successfully copied in '${target}'"
+    check "SSH Public key of master successfully copied in '${authKey}'"
   fi
 
   doStart ${slaveDocker}
