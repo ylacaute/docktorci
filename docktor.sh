@@ -69,8 +69,9 @@ usage() {
          if they doesn't not already exist."
   echo -e "
          ${Red}stop${RCol}
-         Stop all running container (slave or master). Behind the hood it do a docker-compose down so
-         it shut down everything. We can't just stop a service because of a docker-compose bug
+         Stop all running container (slave or master). Behind the hood it do a
+         docker-compose down so it shut down everything. We can't just stop a service
+         because of a docker-compose bug.
          More info: ${Blu}https://github.com/docker/compose/issues/1113${RCol}"
   echo -e "
          ${Red}clean${RCol}
