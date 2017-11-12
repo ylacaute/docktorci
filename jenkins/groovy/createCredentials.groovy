@@ -51,6 +51,22 @@ def gitlabCredentials = new BasicSSHUserPrivateKey(
         gitlabCredentialsClass.passphrase,
         gitlabCredentialsClass.description)
 
+// GITHUB ACCOUNT
+def githubCredentialsClass = [
+        'id':'githubCredentialsId',
+        'username':'jenkins',
+        'sshKeyPath':'/run/secrets/githubKeys/id_rsa',
+        'passphrase':'',
+        'description':'GitHub Credentials']
+def githubCredentials = new BasicSSHUserPrivateKey(
+        CredentialsScope.GLOBAL,
+        githubCredentialsClass.id,
+        githubCredentialsClass.username,
+        new BasicSSHUserPrivateKey.FileOnMasterPrivateKeySource(
+                githubCredentialsClass.sshKeyPath),
+        githubCredentialsClass.passphrase,
+        githubCredentialsClass.description)
+
 def global_domain = Domain.global()
 def credentials_store = Jenkins.instance
         .getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0]

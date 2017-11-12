@@ -14,7 +14,7 @@
     <retryWaitTime>0</retryWaitTime>
     <sshHostKeyVerificationStrategy class="hudson.plugins.sshslaves.verifiers.NonVerifyingKeyVerificationStrategy"/>
   </launcher>
-  <label>Front</label>
+  <label>slave-docker</label>
   <nodeProperties>
     <hudson.slaves.EnvironmentVariablesNodeProperty>
       <envVars serialization="custom">

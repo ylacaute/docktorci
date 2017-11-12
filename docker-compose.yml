@@ -34,6 +34,7 @@ services:
       - artifactory
       - jenkinsSlaveKeys
       - gitlabKeys
+      - githubKeys
 
   jenkins-slave:
     build:
@@ -66,4 +67,6 @@ secrets:
     file: ${SECRET_DIR}/jenkins/slave
   gitlabKeys:
     file: ${SECRET_DIR}/jenkins/gitlab
+  githubKeys:
+    file: ${SECRET_DIR}/jenkins/github
 
