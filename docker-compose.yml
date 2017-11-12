@@ -6,47 +6,63 @@ services:
       # https://github.com/jenkinsci/docker/blob/master/Dockerfile-alpine
       context: https://github.com/jenkinsci/docker.git#alpine
       args:
-        uid: $JENKINS_UID # 1000 by default
-        gid: $JENKINS_GID # 1000 by default
-        JENKINS_VERSION: 2.87
-        JENKINS_SHA: 0ead9cf2ec71224a358eea5aac78fd01e6fa731ab2879dca5652641bac4dfadb
-    image: jenkins-official:1.0
+        uid: ${JENKINS_UID}
+        gid: ${JENKINS_GID}
+        JENKINS_VERSION: 2.89
+        JENKINS_SHA: e7551f166479b54135e2255f42decc2cce7a28150e3d345dd28c8e049486b71d
+    image: jenkins-official:latest
 
-  jenkins-slave-ssh-official:
+  jenkins-master:
     build:
-      # https://github.com/jenkinsci/docker-ssh-slave/blob/master/Dockerfile
-      context: https://github.com/jenkinsci/docker-ssh-slave.git#master
+      context: ./jenkins
+      dockerfile: Dockerfile-master
+      args:
+        SLAVE_HOST: ${SLAVE_HOST}
+    image: jenkins-master:latest
+    container_name: jenkins-master
+    environment:
+      JENKINS_OPTS: "--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
+      #JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    ports:
+      - "8042:8080"
+      - "50000:50000"
+    volumes:
+      - ${JENKINS_HOME}:/var/jenkins_home
+      - ${JENKINS_LOGS}:/var/log/jenkins
+    secrets:
+      - admin
+      - artifactory
+      - jenkinsSlaveKeys
+      - gitlabKeys
+
+  jenkins-slave:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile-slave
       args:
         uid: $JENKINS_UID
         gid: $JENKINS_GID
-    image: jenkins-slave-ssh-official:1.0
+    image: jenkins-slave:latest
 
-  jenkins:
+  jenkins-slave-docker:
     build:
       context: ./jenkins
-    image: docktor-jenkins:1.0
-    container_name: jenkins
-    environment:
-      JENKINS_OPTS: "--logfile=/var/log/jenkins/jenkins.log"
-      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      dockerfile: Dockerfile-slave-docker
+    image: jenkins-slave-docker:latest
+    container_name: jenkins-slave
     ports:
-      - '8042:8080'
+      - "2222:22"
     volumes:
-      - /home/jenkins/jenkins_home:/var/jenkins_home
-      - /var/log/jenkins:/var/log/jenkins
-    secrets:
-      - artifactoryPassword
-      - jenkinsSlavePassword
-      - sshKey
-      - adminPassword
+      - ${JENKINS_SLAVE_HOME}:/home/jenkins
+      - /var/run/docker.sock:/var/run/docker.sock
 
 secrets:
-  adminPassword:
-    file: /home/jenkins/.secrets/jenkins/adminPassword
-  artifactoryPassword:
-    file: /home/jenkins/.secrets/jenkins/artifactoryPassword
-  jenkinsSlavePassword:
-    file: /home/jenkins/.secrets/jenkins/jenkinsSlavePassword
-  sshKey:
-    file: /home/jenkins/.secrets/jenkins/sshSlave/id_rsa.pub
+  admin:
+    file: ${JENKINS_HOME}/.secrets/jenkins/admin
+  artifactory:
+    file: ${JENKINS_HOME}/.secrets/jenkins/artifactory
+  jenkinsSlaveKeys:
+    file: ${JENKINS_HOME}/.secrets/jenkins/slave
+  gitlabKeys:
+    file: ${JENKINS_HOME}/.secrets/jenkins/gitlab
 

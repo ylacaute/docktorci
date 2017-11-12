@@ -1,0 +1,31 @@
+FROM jenkins-official:latest
+
+LABEL maintainer "yannick.lacaute@gmail.com"
+
+# IP of the slave host (the slave container will run on it)
+ARG SLAVE_HOST
+
+USER root
+
+# Create directories for jenkins war and log files
+RUN mkdir -p /var/log/jenkins\
+    && chown -R jenkins: /var/log/jenkins\
+    && mkdir -p /var/cache/jenkins\
+    && chown -R jenkins: /var/cache/jenkins
+
+USER jenkins
+
+# Installing needed plugins
+COPY plugins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+
+# Adding init scripts
+COPY groovy/* /usr/share/jenkins/ref/init.groovy.d/
+
+# Set default config
+COPY config/ /usr/share/jenkins/ref
+
+# Replace the slave host variable in configuration
+USER root
+RUN sed -i s/__SLAVE_HOST__/${SLAVE_HOST}/ /usr/share/jenkins/ref/nodes/slaveNode/config.xml
+USER jenkins

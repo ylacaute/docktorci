@@ -9,20 +9,24 @@ import com.cloudbees.jenkins.plugins.sshcredentials.impl.*
 def jenkinsSlaveCredentialsClass = [
         'id':'jenkinsSlaveCredentialsId',
         'username':'jenkins',
-        'password':new File("/run/secrets/jenkinsSlavePassword").text.trim(),
+        'sshKeyPath':'/run/secrets/jenkinsSlaveKeys/id_rsa',
+        'passphrase':'',
         'description':'Jenkins Slave Credentials']
-def jenkinsSlaveCredentials = new UsernamePasswordCredentialsImpl(
-        CredentialsScope.SYSTEM,
+def jenkinsSlaveCredentials = new BasicSSHUserPrivateKey(
+        CredentialsScope.GLOBAL,
         jenkinsSlaveCredentialsClass.id,
-        jenkinsSlaveCredentialsClass.description,
         jenkinsSlaveCredentialsClass.username,
-        jenkinsSlaveCredentialsClass.password)
+        new BasicSSHUserPrivateKey.FileOnMasterPrivateKeySource(
+                jenkinsSlaveCredentialsClass.sshKeyPath),
+        jenkinsSlaveCredentialsClass.passphrase,
+        jenkinsSlaveCredentialsClass.description)
 
 // ARTIFACTORY ACCOUNT
+def artifactoryCredentialsRaw = new File("/run/secrets/artifactory").text.trim().split(":")
 def artifactoryCredentialsClass = [
         'id':'artifactoryCredentialsId',
-        'username':'jenkins',
-        'password':new File("/run/secrets/artifactoryPassword").text.trim(),
+        'username':artifactoryCredentialsRaw[0],
+        'password':artifactoryCredentialsRaw[1],
         'description':'Artifactory Credentials']
 def artifactoryCredentials = new UsernamePasswordCredentialsImpl(
         CredentialsScope.GLOBAL,
@@ -35,7 +39,7 @@ def artifactoryCredentials = new UsernamePasswordCredentialsImpl(
 def gitlabCredentialsClass = [
         'id':'gitlabCredentialsId',
         'username':'jenkins',
-        'sshKeyPath':'/run/secrets/gitlab',
+        'sshKeyPath':'/run/secrets/gitlabKeys/id_rsa',
         'passphrase':'',
         'description':'GitLab Credentials']
 def gitlabCredentials = new BasicSSHUserPrivateKey(
@@ -44,8 +48,8 @@ def gitlabCredentials = new BasicSSHUserPrivateKey(
         gitlabCredentialsClass.username,
         new BasicSSHUserPrivateKey.FileOnMasterPrivateKeySource(
                 gitlabCredentialsClass.sshKeyPath),
-                gitlabCredentialsClass.passphrase,
-                gitlabCredentialsClass.description)
+        gitlabCredentialsClass.passphrase,
+        gitlabCredentialsClass.description)
 
 def global_domain = Domain.global()
 def credentials_store = Jenkins.instance

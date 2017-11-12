@@ -123,3 +123,11 @@ Remove the **jenkins_home** directory, update the **docker-compose.yml** file wi
 - [ ] Add Jenkins as a systemd service
 
 
+# Tips & tricks
+
+After installing a plugin, you can extract the updated plugins list from the jenkins console. 
+```groovy
+jenkins.model.Jenkins.instance.getPluginManager().getPlugins().each {
+  println "${it.getShortName()}"
+}
+```
