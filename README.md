@@ -58,9 +58,6 @@ ssh-keygen -f /home/jenkins/.secrets/jenkins/slave/id_rsa -N ""
 
 # Secure your .secrets directory and assign it to the jenkins user
 chmod -R go-rwx /home/jenkins/.secrets && chown -R jenkins:jenkins /home/jenkins/.secrets
-
-# create a log directory
-mkdir /var/log/jenkins && chown jenkins:jenkins /var/log/jenkins
 ```
 
 ### Checkout this project
