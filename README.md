@@ -63,13 +63,19 @@ You can checkout this project anywhere, /home/jenkins will be use here.
 git clone https://github.com/ylacaute/docktorci.git && cd docktorci
 ```
 This script **docktor.sh** will help you to control your jenkins master and slave.
+<img src="usage.png" alt="docktorci">
 
 ### Start Jenkins master
+The first time you run the script, it is simpler to run it as root to create all missing directories.
 ```bash
-./docktor.sh --slave-host <YOUR IP> start master
+./docktor.sh start master
 ```
 The first time you start Jenkins, images will have to be build. During this build you need to specify the slave
-host IP. If you don't specify it, the script will take the first IP given from the ```hostname -I``` command. 
+host IP. The script will take the first IP given from the ```hostname -I``` command which is usually the good one to
+use. If it is not the case, you still can specify it: 
+```bash
+./docktor.sh -r --slave-host <YOUR_SLAVE_IP> start master
+```
 
 ### Start Jenkins slave
 ```bash
@@ -83,6 +89,10 @@ A simple hello-world pipeline is already created.
 
 
 ## Documentation
+
+### SSH
+By default, master and slave comminucation is done with SSH on port 2222. This is not parametrable but you can
+easily change it by yourself (node config + docker-compose config).
 
 ### Logging
 Logs are accessible in **/var/log/jenkins/jenkins.log** by default.
@@ -98,3 +108,6 @@ jenkins.model.Jenkins.instance.getPluginManager().getPlugins().each {
   println "${it.getShortName()}"
 }
 ```
+
+## Screenshots
+
