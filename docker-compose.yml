@@ -9,7 +9,7 @@ services:
         uid: ${JENKINS_UID}
         gid: ${JENKINS_GID}
         SLAVE_HOST: ${SLAVE_HOST}
-        JENKINS_SLAVE_HOME: ${JENKINS_SLAVE_HOME}
+        SLAVE_HOME: ${SLAVE_HOME}
         image: jenkins-master:latest
     container_name: jenkins-master
     environment:

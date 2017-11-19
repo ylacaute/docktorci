@@ -12,7 +12,7 @@ ENV[JENKINS_SLAVE_DOCKER]="jenkins-slave-docker"
 
 # Home of master and slave (not necessary on the same host)
 ENV[JENKINS_HOME]="/home/jenkins/master"
-ENV[JENKINS_SLAVE_HOME]="/home/jenkins/slave"
+ENV[SLAVE_HOME]="/home/jenkins/slave"
 
 # General configuration
 ENV[JENKINS_LOGS]="/var/log/jenkins"
@@ -94,7 +94,7 @@ doBuild() {
   JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
   SECRET_DIR=${ENV[SECRET_DIR]}\
   SLAVE_HOST=${ENV[SLAVE_HOST]}\
-  JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
+  SLAVE_HOME=${ENV[SLAVE_HOME]}\
   docker-compose build ${service}
   set +e
 }
@@ -112,7 +112,7 @@ doStart() {
   JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
   SECRET_DIR=${ENV[SECRET_DIR]}\
   SLAVE_HOST=${ENV[SLAVE_HOST]}\
-  JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
+  SLAVE_HOME=${ENV[SLAVE_HOME]}\
   docker-compose up -d ${service}
   set +e
 }
@@ -169,7 +169,7 @@ startSlave() {
   local rebuildAll=${2}
   local slave=${ENV[JENKINS_SLAVE]}
   local slaveDocker=${ENV[JENKINS_SLAVE_DOCKER]}
-  local slaveHome=${ENV[JENKINS_SLAVE_HOME]}
+  local slaveHome=${ENV[SLAVE_HOME]}
   local authKeyDir="${slaveHome}/.ssh"
   local authKey="${authKeyDir}/authorized_keys"
   local pubKey="${ENV[SECRET_DIR]}/jenkins/slave/id_rsa.pub"
@@ -228,7 +228,7 @@ stop() {
   JENKINS_LOGS=${ENV[JENKINS_LOGS]}\
   SECRET_DIR=${ENV[SECRET_DIR]}\
   SLAVE_HOST=${ENV[SLAVE_HOST]}\
-  JENKINS_SLAVE_HOME=${ENV[JENKINS_SLAVE_HOME]}\
+  SLAVE_HOME=${ENV[SLAVE_HOME]}\
   docker-compose down
   set +e
 }
