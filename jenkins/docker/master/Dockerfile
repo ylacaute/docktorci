@@ -44,6 +44,6 @@ RUN sed -i s/__SLAVE_HOST__/${SLAVE_HOST}/ /usr/share/jenkins/ref/nodes/slaveNod
 # When you use Docker commands inside the Dockerized slave, if those commands use the workspace as a volume, it
 # will not work: you can't mount a Docker volume inside a running container. You must bind your volume on the
 # real host directory. That's why we inject this variable which will be accessible inside pipelines.
-RUN sed -i s/__JENKINS_HOME_HOST_VOLUME__/${JENKINS_SLAVE_HOME}/ /usr/share/jenkins/ref/nodes/slaveNode/config.xml
+RUN sed -i s~__JENKINS_HOME_HOST_VOLUME__~${JENKINS_SLAVE_HOME}~ /usr/share/jenkins/ref/nodes/slaveNode/config.xml
 USER jenkins
 

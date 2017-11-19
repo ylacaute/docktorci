@@ -6,12 +6,15 @@ services:
       context: ./jenkins
       dockerfile: docker/master/Dockerfile
       args:
+        uid: ${JENKINS_UID}
+        gid: ${JENKINS_GID}
         SLAVE_HOST: ${SLAVE_HOST}
-    image: jenkins-master:latest
+        JENKINS_SLAVE_HOME: ${JENKINS_SLAVE_HOME}
+        image: jenkins-master:latest
     container_name: jenkins-master
     environment:
       JENKINS_OPTS: "--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
-      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      #JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
     ports:
       - "8042:8080"
       - "50000:50000"
