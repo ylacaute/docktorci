@@ -1,17 +1,6 @@
 version: '3.3'
 services:
 
-  jenkins-official:
-    build:
-      # https://github.com/jenkinsci/docker/blob/master/Dockerfile-alpine
-      context: https://github.com/jenkinsci/docker.git#alpine
-      args:
-        uid: ${JENKINS_UID}
-        gid: ${JENKINS_GID}
-        JENKINS_VERSION: 2.89
-        JENKINS_SHA: e7551f166479b54135e2255f42decc2cce7a28150e3d345dd28c8e049486b71d
-    image: jenkins-official:latest
-
   jenkins-master:
     build:
       context: ./jenkins
@@ -22,7 +11,7 @@ services:
     container_name: jenkins-master
     environment:
       JENKINS_OPTS: "--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
-      #JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
     ports:
       - "8042:8080"
       - "50000:50000"

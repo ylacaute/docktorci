@@ -6,7 +6,6 @@ PROG="dockerCI.sh"
 declare -A ENV
 
 # Image names (which are also docker-compose service names)
-ENV[JENKINS_OFFICIAL]="jenkins-official"
 ENV[JENKINS_MASTER]="jenkins-master"
 ENV[JENKINS_SLAVE]="jenkins-slave"
 ENV[JENKINS_SLAVE_DOCKER]="jenkins-slave-docker"
@@ -57,7 +56,7 @@ usage() {
          Force to rebuild docker image (slave or master depending the main command).
          It deletes containers and images if exist.
          If you specify ${Cya}all${RCol} argument, it will also rebuild the parent image, which
-         take much more time to rebuild.
+         take much more time.
 
          ${Cya}-s${RCol},${Cya}--slave-host ${Gre}145.239.78.98${RCol}
          Specify a slave host (ip) for the jenkins master configuration"
@@ -66,7 +65,7 @@ usage() {
   echo -e "
          ${Red}start ${RCol}[${Blu}slave${RCol}|${Blu}master${RCol}]
          Start the slave or master depending the argument. Docker images are build
-         if they doesn't not already exist."
+         if they don't not already exist."
   echo -e "
          ${Red}stop${RCol}
          Stop all running container (slave or master). Behind the hood it do a
@@ -124,21 +123,13 @@ doStart() {
 startMaster() {
   local rebuild=${1}
   local rebuildAll=${2}
-  local jenkinsOfficial=${ENV[JENKINS_OFFICIAL]}
   local jenkinsMaster=${ENV[JENKINS_MASTER]}
   local jenkinsHome=${ENV[JENKINS_HOME]}
   local jenkinsLogs=${ENV[JENKINS_LOGS]}
   local secretDir=${ENV[SECRET_DIR]}
 
-  if [[ "${rebuildAll}" == "true" ]]; then
-    deleteDockerImage ${jenkinsOfficial}
-  fi
   if [[ "${rebuild}" == "true" ]]; then
     deleteDockerImage ${jenkinsMaster}
-  fi
-  verifyDockerImageExist ${jenkinsOfficial}
-  if [[ $? -ne 0 ]]; then
-    doBuild ${jenkinsOfficial}
   fi
   verifyDockerImageExist ${jenkinsMaster}
   if [[ $? -ne 0 ]]; then
@@ -250,7 +241,6 @@ clean() {
   info "Removing all images on this host..."
   deleteDockerImage ${ENV[JENKINS_SLAVE]}
   deleteDockerImage ${ENV[JENKINS_SLAVE_DOCKER]}
-  deleteDockerImage ${ENV[JENKINS_OFFICIAL]}
   deleteDockerImage ${ENV[JENKINS_MASTER]}
 }
 
