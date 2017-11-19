@@ -1,4 +1,4 @@
-FROM jenkins:LTS
+FROM jenkins/jenkins:lts
 
 LABEL maintainer "yannick.lacaute@gmail.com"
 
@@ -12,19 +12,19 @@ ARG JENKINS_SLAVE_HOME
 
 USER root
 
-RUN usermod -u ${uid} jenkins
-  && groupmod -g ${gid} jenkins
+RUN usermod -u ${uid} jenkins\
+  && groupmod -g ${gid} jenkins\
   && mkdir -p /var/log/jenkins\
   && mkdir -p /var/cache/jenkins\
   && chown -R jenkins:jenkins\
-  && /home/jenkins\
+     /var/jenkins_home\
      /usr/share/jenkins\
      /var/log/jenkins\
      /var/cache/jenkins\
      /usr/local/bin/jenkins-support\
      /usr/local/bin/jenkins.sh\
      /usr/local/bin/plugins.sh\
-     /usr/local/bin/install-plugins.sh\
+     /usr/local/bin/install-plugins.sh
 
 USER jenkins
 
