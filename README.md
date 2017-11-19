@@ -43,6 +43,10 @@ sampleAdminLogin:myPassword
 cat /home/jenkins/.secrets/jenkins/artifactory
 login:pwd
 
+# Your docker hub account (to push image)
+cat /home/jenkins/.secrets/jenkins/dockerhub
+login:pwd
+
 # Your ssh priv and pub keys here for master/slave communication
 ls /home/jenkins/.secrets/jenkins/slave
  - id_rsa

@@ -32,6 +32,7 @@ services:
     secrets:
       - admin
       - artifactory
+      - dockerhub
       - jenkinsSlaveKeys
       - gitlabKeys
       - github
@@ -63,6 +64,8 @@ secrets:
     file: ${SECRET_DIR}/jenkins/admin
   artifactory:
     file: ${SECRET_DIR}/jenkins/artifactory
+  dockerhub:
+    file: ${SECRET_DIR}/jenkins/dockerhub
   jenkinsSlaveKeys:
     file: ${SECRET_DIR}/jenkins/slave
   gitlabKeys:

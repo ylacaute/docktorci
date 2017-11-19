@@ -51,6 +51,20 @@ def gitlabCredentials = new BasicSSHUserPrivateKey(
         gitlabCredentialsClass.passphrase,
         gitlabCredentialsClass.description)
 
+// DOCKER HUB ACCOUNT
+def dockerHubCredentialsRaw = new File("/run/secrets/dockerhub").text.trim().split(":")
+def dockerHubCredentialsClass = [
+        'id':'dockerHubCredentialsId',
+        'username':dockerHubCredentialsRaw[0],
+        'password':dockerHubCredentialsRaw[1],
+        'description':'Docker Hub Credentials']
+def dockerHubCredentials = new UsernamePasswordCredentialsImpl(
+        CredentialsScope.GLOBAL,
+        dockerHubCredentialsClass.id,
+        dockerHubCredentialsClass.description,
+        dockerHubredentialsClass.username,
+        dockerHubCredentialsClass.password)
+
 // GITHUB ACCOUNT (only login/password supported by Jenkins for Github)
 def githubCredentialsRaw = new File("/run/secrets/github").text.trim().split(":")
 def githubCredentialsClass = [
