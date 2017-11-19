@@ -62,7 +62,7 @@ def dockerHubCredentials = new UsernamePasswordCredentialsImpl(
         CredentialsScope.GLOBAL,
         dockerHubCredentialsClass.id,
         dockerHubCredentialsClass.description,
-        dockerHubredentialsClass.username,
+        dockerHubCredentialsClass.username,
         dockerHubCredentialsClass.password)
 
 // GITHUB ACCOUNT (only login/password supported by Jenkins for Github)
@@ -85,5 +85,6 @@ def credentials_store = Jenkins.instance
         .getStore()
 credentials_store.addCredentials(global_domain, jenkinsSlaveCredentials)
 credentials_store.addCredentials(global_domain, artifactoryCredentials)
+credentials_store.addCredentials(global_domain, dockerHubCredentials)
 credentials_store.addCredentials(global_domain, gitlabCredentials)
 credentials_store.addCredentials(global_domain, githubCredentials)
