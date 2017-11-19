@@ -1,17 +1,30 @@
-FROM jenkins-official:latest
+FROM jenkins:LTS
 
 LABEL maintainer "yannick.lacaute@gmail.com"
 
-# IP of the slave host (the slave container will run on it)
+# Jenkins account
+ARG uid=1000
+ARG gid=1000
+
+# Slave node config
 ARG SLAVE_HOST
+ARG JENKINS_SLAVE_HOME
 
 USER root
 
-# Create directories for jenkins war and log files
-RUN mkdir -p /var/log/jenkins\
-    && chown -R jenkins: /var/log/jenkins\
-    && mkdir -p /var/cache/jenkins\
-    && chown -R jenkins: /var/cache/jenkins
+RUN usermod -u ${uid} jenkins
+  && groupmod -g ${gid} jenkins
+  && mkdir -p /var/log/jenkins\
+  && mkdir -p /var/cache/jenkins\
+  && chown -R jenkins:jenkins\
+  && /home/jenkins\
+     /usr/share/jenkins\
+     /var/log/jenkins\
+     /var/cache/jenkins\
+     /usr/local/bin/jenkins-support\
+     /usr/local/bin/jenkins.sh\
+     /usr/local/bin/plugins.sh\
+     /usr/local/bin/install-plugins.sh\
 
 USER jenkins
 
