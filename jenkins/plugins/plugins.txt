@@ -25,7 +25,6 @@ structs
 github
 docker-plugin
 javadoc
-command-launcher
 ant
 credentials-binding
 durable-task
