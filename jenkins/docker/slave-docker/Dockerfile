@@ -2,9 +2,6 @@ FROM jenkins-slave:latest
 
 LABEL maintainer "yannick.lacaute@gmail.com"
 
-# Host directory on which is binded the jenkins slave home
-ARG JENKINS_SLAVE_HOME
-
 # Add Docker’s official GPG key and repo
 RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add -
 RUN add-apt-repository \

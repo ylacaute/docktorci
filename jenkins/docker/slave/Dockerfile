@@ -2,9 +2,6 @@ FROM openjdk:8-jdk
 
 LABEL maintainer "yannick.lacaute@gmail.com"
 
-# In case you need proxy
-#RUN echo 'Acquire::http::Proxy "http://127.0.0.1:8080";' >> /etc/apt/apt.conf
-
 # Install all necessary packages
 RUN apt-get update -qq && apt-get install -qqy \
     apt-transport-https \

@@ -10,7 +10,7 @@ services:
         gid: ${JENKINS_GID}
         SLAVE_HOST: ${SLAVE_HOST}
         SLAVE_HOME: ${SLAVE_HOME}
-        image: jenkins-master:latest
+    image: jenkins-master:latest
     container_name: jenkins-master
     environment:
       JENKINS_OPTS: "--logfile=/var/log/jenkins/jenkins.log --webroot=/var/cache/jenkins/war"
@@ -36,7 +36,6 @@ services:
       args:
         uid: $JENKINS_UID
         gid: $JENKINS_GID
-        JENKINS_SLAVE_HOME: ${JENKINS_SLAVE_HOME}
     image: jenkins-slave:latest
 
   jenkins-slave-docker:
@@ -48,7 +47,7 @@ services:
     ports:
       - "2222:22"
     volumes:
-      - ${JENKINS_SLAVE_HOME}:/home/jenkins
+      - ${SLAVE_HOME}:/home/jenkins
       - /var/run/docker.sock:/var/run/docker.sock
 
 secrets:
